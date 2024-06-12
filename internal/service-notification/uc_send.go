@@ -6,7 +6,7 @@ import (
 	"fmt"
 	"strconv"
 
-	"kafka-example/internal/constants/kafka"
+	kafkaconst "kafka-example/env/kafka"
 	"kafka-example/internal/model/entity"
 	"kafka-example/internal/service-notification/request"
 
@@ -17,12 +17,12 @@ func (s *service) SendNotification(
 	ctx context.Context, req request.SendNotificationReq,
 ) error {
 	// Get user by ID
-	fromUser, err := s.userRepo.GetUserByID(req.FromUserID)
+	fromUser, err := s.userRepo.GetUserByID(ctx, req.FromUserID)
 	if err != nil {
 		return err
 	}
 
-	toUser, err := s.userRepo.GetUserByID(req.ToUserID)
+	toUser, err := s.userRepo.GetUserByID(ctx, req.ToUserID)
 	if err != nil {
 		return err
 	}
@@ -53,7 +53,7 @@ func (s *service) publishNotification(
 
 	// Publish to Kafka
 	msg := &sarama.ProducerMessage{
-		Topic: kafkaconst.KafkaTopic,
+		Topic: kafkaconst.TopicNotifications,
 		Key:   sarama.StringEncoder(strconv.Itoa(toUser.ID)),
 		Value: sarama.StringEncoder(notificationJSON),
 	}

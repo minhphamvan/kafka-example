@@ -5,8 +5,8 @@ import (
 	"fmt"
 	"log"
 
+	"kafka-example/env/kafka"
 	"kafka-example/internal/app-api/handler/notification"
-	"kafka-example/internal/constants/kafka"
 	"kafka-example/internal/service-notification"
 	"kafka-example/internal/store/notification"
 	"kafka-example/internal/store/user"
@@ -38,8 +38,8 @@ func main() {
 	}
 
 	// Server running
-	fmt.Printf("Kafka CONSUMER (Group: %s)"+
-		"started at http://localhost%s\n", kafkaconst.ConsumerGroup, kafkaconst.ConsumerPort)
+	fmt.Printf("Kafka CONSUMER (Group: %s) started at http://localhost%s\n",
+		kafkaconst.ConsumerGroupNotifications, kafkaconst.ConsumerPort)
 
 	if err := router.Run(kafkaconst.ConsumerPort); err != nil {
 		log.Printf("failed to run the server: %v", err)

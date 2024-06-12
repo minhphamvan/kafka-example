@@ -4,11 +4,11 @@ import (
 	"fmt"
 	"log"
 
+	"kafka-example/env/kafka"
 	"kafka-example/internal/app-api/handler/notification"
-	"kafka-example/internal/constants/kafka"
 	"kafka-example/internal/pkg/kafka-utils"
 	"kafka-example/internal/service-notification"
-	notificationstore "kafka-example/internal/store/notification"
+	"kafka-example/internal/store/notification"
 	"kafka-example/internal/store/user"
 
 	"github.com/gin-gonic/gin"
@@ -40,7 +40,7 @@ func main() {
 	}
 
 	// Server running
-	fmt.Printf("Server Kafka PRODUCER started at http://localhost%s\n", kafkaconst.ProducerPort)
+	fmt.Printf("Kafka PRODUCER started at http://localhost%s\n", kafkaconst.ProducerPort)
 	if err := router.Run(kafkaconst.ProducerPort); err != nil {
 		log.Printf("failed to run the server: %v", err)
 	}

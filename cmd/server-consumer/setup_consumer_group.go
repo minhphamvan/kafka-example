@@ -6,26 +6,26 @@ import (
 	"fmt"
 	"log"
 
-	"kafka-example/internal/constants/kafka"
+	"kafka-example/env/kafka"
 	"kafka-example/internal/model/entity"
 	"kafka-example/internal/repository/notification"
 
 	"github.com/IBM/sarama"
 )
 
-type Consumer struct {
+type ConsumerGroupHandler struct {
 	notificationRepo notificationrepo.IRepository
 }
 
-func (*Consumer) Setup(sarama.ConsumerGroupSession) error {
+func (*ConsumerGroupHandler) Setup(sarama.ConsumerGroupSession) error {
 	return nil
 }
 
-func (*Consumer) Cleanup(sarama.ConsumerGroupSession) error {
+func (*ConsumerGroupHandler) Cleanup(sarama.ConsumerGroupSession) error {
 	return nil
 }
 
-func (consumer *Consumer) ConsumeClaim(
+func (consumerGroupHandler *ConsumerGroupHandler) ConsumeClaim(
 	sess sarama.ConsumerGroupSession, claim sarama.ConsumerGroupClaim,
 ) error {
 	for msg := range claim.Messages() {
@@ -39,7 +39,7 @@ func (consumer *Consumer) ConsumeClaim(
 		}
 
 		ctx := context.Background()
-		consumer.notificationRepo.Add(ctx, userID, notification)
+		consumerGroupHandler.notificationRepo.Add(ctx, userID, notification)
 		sess.MarkMessage(msg, "")
 	}
 	return nil
@@ -49,7 +49,7 @@ func initializeConsumerGroup() (sarama.ConsumerGroup, error) {
 	config := sarama.NewConfig()
 
 	consumerGroup, err := sarama.NewConsumerGroup(
-		[]string{kafkaconst.KafkaServerAddress}, kafkaconst.ConsumerGroup, config)
+		[]string{kafkaconst.KafkaServerAddress}, kafkaconst.ConsumerGroupNotifications, config)
 	if err != nil {
 		return nil, fmt.Errorf("failed to initialize consumer group: %w", err)
 	}
@@ -66,12 +66,12 @@ func setupConsumerGroup(
 	}
 	defer consumerGroup.Close()
 
-	consumer := &Consumer{
+	consumerGroupHandler := &ConsumerGroupHandler{
 		notificationRepo: notificationRepo,
 	}
 
 	for {
-		err = consumerGroup.Consume(ctx, []string{kafkaconst.ConsumerTopic}, consumer)
+		err = consumerGroup.Consume(ctx, []string{kafkaconst.TopicNotifications}, consumerGroupHandler)
 		if err != nil {
 			log.Printf("error from consumer: %v", err)
 		}

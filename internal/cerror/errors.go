@@ -4,4 +4,6 @@ import (
 	"errors"
 )
 
-var ErrUserNotFound = errors.New("err user not found")
+var (
+	ErrUserNotFound = errors.New("err user not found")
+)

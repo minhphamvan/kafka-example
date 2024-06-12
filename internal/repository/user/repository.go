@@ -1,9 +1,11 @@
 package userrepo
 
 import (
+	"context"
+
 	"kafka-example/internal/model/entity"
 )
 
 type IRepository interface {
-	GetUserByID(id int) (entity.User, error)
+	GetUserByID(ctx context.Context, id int) (entity.User, error)
 }
